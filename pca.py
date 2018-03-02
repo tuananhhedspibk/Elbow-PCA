@@ -1,66 +1,81 @@
 import numpy as np
 import csv
 
-def accumulate(array, index):
-  total = 0.0
-  idx_ct = 0
-  for item in array:
-    idx_ct += 1
-    if idx_ct <= index - 1:
-      total += item
-    else:
-      return total
-  return total
+class PCA:
+  def __init__(self, ipt_data):
+    self.dataset = None
+    self.dimension = 0
 
-all_samples = []
+    self.dataset, self.dimension = load_data(ipt_data)
 
-with open("data.csv") as csvfile:
-  reader = csv.reader(csvfile)
-  for row in reader:
-    data = [float(x) for x in row[0].split(" ")]
-    all_samples.append(data)
+  def load_data(file_name):
+    dataset = []
 
-all_samples = np.array(all_samples)
+    with open(file_name) as csvfile:
+      reader = csv.reader(csvfile)
+      for row in reader:
+        data = [float(x) for x in row[0].split(" ")]
+        dataset.append(data)
 
-mean_x = np.mean(all_samples[0, :])
-mean_y = np.mean(all_samples[1, :])
-mean_z = np.mean(all_samples[2, :])
-mean_t = np.mean(all_samples[3, :])
-mean_w = np.mean(all_samples[4, :])
+    dataset = np.array(dataset)
+    dimension = len(dataset)
 
-mean_vector = np.array([[mean_x], [mean_y], [mean_z], [mean_t], [mean_w]])
+    return dataset, dimension
 
-# Computing the Scatter Matrix
+  def accumulate(array, index):
+    total = 0.0
+    idx_ct = 0
+    for item in array:
+      idx_ct += 1
+      if idx_ct <= index - 1:
+        total += item
+      else:
+        return total
+    return total
 
-scatter_matrix = np.zeros((5, 5))
-for i in range(all_samples.shape[1]):
-  scatter_matrix += (all_samples[:, i].reshape(5, 1) - mean_vector).dot((all_samples[:, i].reshape(5, 1)).T)
+  def calculate_mean_vector(self):
+    vector_elements = []
+    for i in range(self.dimension):
+      element = np.array(np.mean(self.dataset[i, :]))
+      vector_elements.append(vector_elements)
 
-# Computing eigenvectors and corresponding eigenvalues
+    mean_vector = np.array(vector_elements)
 
-eig_val_sc, eig_vec_sc = np.linalg.eig(scatter_matrix)
+    return mean_vector
 
-eig_pairs = [(np.abs(eig_val_sc[i]), eig_vec_sc[:, i]) for i in range(len(eig_val_sc))]
-eig_pairs.sort(key=lambda x: x[0], reverse=True)
+  def calculate_scatter_matrix(self):
+    scatter_matrix = np.zeros((5, 5))
+    for i in range(self.dataset.shape[1]):
+      scatter_matrix += (self.dataset[:, i].reshape(5, 1) - self.mean_vector).dot((all_samples[:, i].reshape(5, 1)).T)
 
-accumulate_n = accumulate(eig_val_sc, 5)
-pca_k = 0
-eig_val_sc = sorted(eig_val_sc, key=float, reverse=True)
+    return scatter_matrix
 
-for k in range(1, 6):
-  if float(accumulate(eig_val_sc, k)) / float(accumulate_n) > 0.9:
-    pca_k = k
-    break
+  def calculate_eig(self, scatter_matrix):
+    return np.linalg.eig(scatter_matrix)
 
-print eig_val_sc
-print pca_k
+  def sort_eig(self, eig_val_sc, eig_vec_sc):
+    eig_pairs = [(np.abs(eig_val_sc[i]), eig_vec_sc[:, i]) for i in range(len(eig_val_sc))]
+    eig_pairs.sort(key=lambda x: x[0], reverse=True)
 
-stack_arr_list = list()
+    return eig_pairs
 
-for i in range(pca_k):
-  stack_arr_list.append(eig_pairs[i][1].reshape(5, 1))
+  def save_data(opt_file, data, fmt="%.5f"):
+    np.savetxt(opt_file, data, fmt=fmt)
 
-matrix_w = np.hstack(stack_arr_list)
-transformed = matrix_w.T.dot(all_samples)
+  def calculate_pca_k(self, eig_val_sc):
+    accumulate_n = accumulate(eig_val_sc, self.dimension)
+    eig_val_sc = sorted(eig_val_sc, key=float, reverse=True)
 
-np.savetxt('./data.csv', transformed, fmt='%.5f')
+    for k in range(1, self.dimension + 1):
+      if float(accumulate(eig_val_sc, k)) / float(accumulate_n) > 0.9:
+        return k
+
+  def transform_data(self, pca_k, eig_pairs):
+    stack_arr_list = list()
+
+    for i in range(pca_k):
+      stack_arr_list.append(eig_pairs[i][1].reshape(self.dimension, 1))
+
+    matrix_w = np.hstack(stack_arr_list)
+    transformed = matrix_w.T.dot(self.dataset)
+    return transformed
