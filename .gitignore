@@ -1,2 +1,3 @@
-*.csv
+/input
 *.pyc
+/intermediate_output

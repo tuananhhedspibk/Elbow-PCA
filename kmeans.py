@@ -3,7 +3,7 @@ import csv
 import math
 
 class K_Means:
-  def __init__(self, dataset, dataset_size, dimension, tolerance, k=3, max_iterations=500):
+  def __init__(self, dataset, dataset_size, dimension, tolerance, k=3, max_iterations=5000):
     self.tolerance = tolerance
     self.k = k
     self.max_iterations = max_iterations
@@ -19,9 +19,7 @@ class K_Means:
     for i in range(len(feat_one)):
       squared_distance += (feat_one[i] - feat_two[i])**2
     
-    ed = math.sqrt(squared_distance)
-    
-    return ed
+    return squared_distance
   
   def calculate_sse(self):
     sse = 0
