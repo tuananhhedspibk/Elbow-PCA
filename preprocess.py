@@ -100,7 +100,7 @@ def handle_file(input_file_path, output_file_path, delimiter, need_to_checked):
 
 def encode_data(training_corpus):
   if not os.path.isfile(MODEL_FILE_NAME):
-    model = gensim.models.doc2vec.Doc2Vec(training_corpus, size=320, window=8, min_count=5, workers=5)
+    model = gensim.models.doc2vec.Doc2Vec(training_corpus, vector_size=320, window=8, min_count=5, workers=5)
     model.save(MODEL_FILE_NAME)
     model.delete_temporary_training_data(keep_doctags_vectors=True, keep_inference=True)
   else:
