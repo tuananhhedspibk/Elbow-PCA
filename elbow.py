@@ -1,7 +1,10 @@
 from kmeans import *
 from pca import *
+from settings import *
+
 import csv
 import numpy as np
+
 import matplotlib
 matplotlib.use("Agg")
 
@@ -24,7 +27,7 @@ def load_data(file_name):
   return dataset, dataset_size, dimension
 
 if __name__ == "__main__":
-  pca = PCA("./input/data.csv")
+  pca = PCA(ENCODED_DATA_FILE_NAME)
   mean_vector = pca.calculate_mean_vector()
   scatter_matrix = pca.calculate_scatter_matrix(mean_vector)
 
@@ -32,9 +35,9 @@ if __name__ == "__main__":
   eig_pair = pca.sort_eig(eig_val_sc, eig_vec_sc)
   pca_k = pca.calculate_pca_k(eig_val_sc)
   transformed_data = pca.transform_data(pca_k, eig_pair)
-  pca.save_data("./input/data.csv", transformed_data)
+  pca.save_data(ENCODED_DATA_FILE_NAME, transformed_data)
 
-  dataset, maxK, dimension = load_data("./input/data.csv")
+  dataset, maxK, dimension = load_data(ENCODED_DATA_FILE_NAME)
   sse_results = []
 
   K = range(1, maxK + 1)
@@ -48,4 +51,4 @@ if __name__ == "__main__":
   plt.xlabel("k")
   plt.ylabel("SSE")
   plt.title("The Elbow method to show optimal of k")
-  plt.show()
+  plt.savefig(ELBOW_PIC)

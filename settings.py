@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 INPUT_DATA_FILE_NAME = "./input/articles.tsv"
-PROCESSED_INPUT_DATA_FILE_NAME = "./input/data.txt"
 INPUT_STOPWORDS_FILE_NAME = "./input/stopwords.txt"
 ENCODED_DATA_FILE_NAME = "./input/data.csv"
 VOCAB_FILE_NAME = "./intermediate_output/vocab.txt"
 MODEL_FILE_NAME = "./intermediate_output/model.dat"
+
+PROCESSED_INPUT_DATA_FILE_NAME = "./output/data.txt"
+ELBOW_PIC = "./output/elbow.png"
 
 REDUNDANT_SYMBOL = ["\\t", "\\r", "\\n", "##", "\\", "”",
   "**___________________**", "**", "---", "_", "|", "…",
