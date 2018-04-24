@@ -5,9 +5,6 @@ from settings import *
 
 import re
 import os
-import math
-import gensim
-import numpy as np
 
 dir = os.path.dirname(__file__)
 
@@ -71,7 +68,6 @@ def remove_stopwords(data, stopwords):
 
 def handle_file(input_file_path, output_file_path, delimiter, need_to_checked):
   stopwords = load_stopwords()
-  training_corpus = []
 
   ct = 0
   with open(input_file_path) as fp:
@@ -91,28 +87,11 @@ def handle_file(input_file_path, output_file_path, delimiter, need_to_checked):
         outputPyVi = pyviConvert(line)
       outputPyVi = remove_stopwords(outputPyVi, stopwords)
       write_file(output_file_path, outputPyVi, delimiter)
-      outputPyVi = outputPyVi.split()
-      training_corpus.append(gensim.models.doc2vec.TaggedDocument(outputPyVi, [ct]))
+      write_file(A_IDS_FILE_NAME, cut_id, delimiter)
       ct += 1
 
   fp.close()
-  return training_corpus
-
-def encode_data(training_corpus):
-  if not os.path.isfile(MODEL_FILE_NAME):
-    model = gensim.models.doc2vec.Doc2Vec(training_corpus, size=320, window=8, min_count=5, workers=5)
-    model.save(MODEL_FILE_NAME)
-    model.delete_temporary_training_data(keep_doctags_vectors=True, keep_inference=True)
-  else:
-    model = gensim.models.doc2vec.Doc2Vec.load(MODEL_FILE_NAME)
-
-  vectorized_data = []
-  for doc in training_corpus:
-    vectorized_data.append(model.infer_vector(doc.words))
-
-  np.savetxt(ENCODED_DATA_FILE_NAME, vectorized_data, "%.6f")
 
 if __name__ == "__main__":
-  training_corpus = handle_file(os.path.join(dir, INPUT_DATA_FILE_NAME),
+  handle_file(os.path.join(dir, INPUT_DATA_FILE_NAME),
     os.path.join(dir, PROCESSED_INPUT_DATA_FILE_NAME), "\n", True)
-  encode_data(training_corpus)
