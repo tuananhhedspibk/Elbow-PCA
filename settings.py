@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+A_IDS_FILE_NAME = "./a_ids.txt"
 INPUT_DATA_FILE_NAME = "./input/articles.tsv"
 PROCESSED_INPUT_DATA_FILE_NAME = "./input/data.txt"
 INPUT_STOPWORDS_FILE_NAME = "./input/stopwords.txt"
